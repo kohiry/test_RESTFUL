@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime, time
 
 import bcrypt
 import jwt
@@ -7,6 +6,7 @@ from app.database import Base
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from datetime import datetime, time
 
 
 class User(Base):
