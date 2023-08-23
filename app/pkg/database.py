@@ -1,7 +1,13 @@
 import os
+from typing import AsyncGenerator
 
 from app.pkg.models import UserDB, UserModel
-from fastapi_users.db import TortoiseUserDatabase
+from fastapi import Depends
+from fastapi_users.db import (SQLAlchemyBaseUserTableUUID,
+                              SQLAlchemyUserDatabase)
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
+from sqlalchemy.orm import DeclarativeBase
 
 user = os.getenv("USER")
 database = os.getenv("DB_NAME")
@@ -11,40 +17,27 @@ password = os.getenv("PASSWORD")
 DATABASE_URL = f"postgres://{user}:{password}@{host}:5432/{database}"
 
 
-async def get_user_db():
-    yield TortoiseUserDatabase(UserDB, UserModel)
+class Base(DeclarativeBase):
+    pass
 
 
-# import asyncio
-# import os
-
-# from tortoise import Tortoise, fields
-# from tortoise.models import Model
+class User(SQLAlchemyBaseUserTableUUID, Base):
+    pass
 
 
-# class User(Model):
-#     id = fields.IntField(pk=True)
-#     name = fields.CharField(max_length=255)
-#     email = fields.CharField(max_length=255)
-#     age = fields.IntField()
+engine = create_async_engine(DATABASE_URL)
+async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
-# async def init_db():
-#     user = os.getenv("USER")
-#     database = os.getenv("DB_NAME")
-#     host = os.getenv("HOST")
-#     password = os.getenv("PASSWORD")
-
-#     print(user, database, host, password)
-
-#     await Tortoise.init(
-#         db_url=f"postgres://{user}:{password}@{host}:5432/{database}",
-#         modules={"models": ["__main__"]},
-#     )
-
-#     await Tortoise.generate_schemas()
+async def create_db_and_tables():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
-# # Создаем событийный цикл и запускаем асинхронную функцию init_db()
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(init_db())
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        yield session
+
+
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)
