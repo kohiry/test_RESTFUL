@@ -11,10 +11,9 @@ fastapi = {extras = ["all"], version = "^0.101.1"}
 httpx = "^0.24.1"
 pytest = "^7.4.0"
 uvicorn = "^0.23.2"
-tortoise = "^0.1.1"
-tortoise-orm = {extras = ["asyncpg"], version = "^0.20.0"}
 psycopg2-binary = "^2.9.7"
-fastapi-users = "^12.1.1"
+fastapi-users = {extras = ["tortoise-orm"], version = "^12.1.1"}
+sqlalchemy = "^2.0.20"
 
 
 [build-system]
