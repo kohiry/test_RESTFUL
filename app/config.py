@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     USER: str
     PASSWORD: str
     HOST: str
+    SECRET_KEY: str
 
     class Config:
         env_file: str = ".env"

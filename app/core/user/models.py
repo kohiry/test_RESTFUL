@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 
 import bcrypt
 import jwt
+from app.config import get_settings
 from app.database import Base
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -30,7 +31,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     posts = relationship("Post", back_populates="author")
 
-    def hashed_password(self, password: str):
+    def hash_password(self, password: str):
         """
         Хеширует пароль пользователя.
 
@@ -66,4 +67,6 @@ class User(Base):
 
         expiration = datetime.utcnow() + timedelta(hours=24)
         payload = {"sub": str(self.id), "exp": expiration}
-        return jwt.encode(payload, "", algorithm="HS256")  # maybe worong
+        return jwt.encode(
+            payload, str(get_settings().SECRET_KEY), algorithm="HS256"
+        )  # maybe worong

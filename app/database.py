@@ -15,8 +15,8 @@ engine = create_engine(DB_URL)
 
 
 # Создание сессии для работы с базой данных
-Session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
-session = Session()
+SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+# session = Session()
 
 # Создание базового класса для моделей
 Base = declarative_base()
