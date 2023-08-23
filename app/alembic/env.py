@@ -1,9 +1,11 @@
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
+from sqlalchemy import engine_from_config, pool
 from alembic import context
+from core.post.models import Post
+from core.user.models import User
+from decouple import config as envconfig
+from database import Base
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -14,11 +16,18 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+
+section = config.config_ini_section
+config.set_section_option(section, "USER", envconfig("USER"))
+config.set_section_option(section, "PASSWORD", envconfig("PASSWORD"))
+config.set_section_option(section, "DB_NAME", envconfig("DB_NAME"))
+config.set_section_option(section, "HOST", envconfig("HOST"))
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -64,9 +73,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

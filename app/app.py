@@ -1,8 +1,13 @@
-from fastapi import FastAPI
+#
+from fastapi import FastAPI, Depends
 
-from app.database import Base, engine
+# from app.config import settings
+from database import Base, engine
+from core.user.routes import user_router
 
 app = FastAPI()
+
+app.include_router(user_router, prefix="/user")
 
 
 Base.metadata.create_all(bind=engine)

@@ -7,14 +7,7 @@ services:
     restart: always
     environment:
       POSTGRES_DB: $(DB_NAME)
-      POSTGRES_USER: $(USERNAME)
+      POSTGRES_USER: $(USER)
       POSTGRES_PASSWORD: $(PASSWORD)
     ports:
       - "5432:5432"
-  server:
-    build: .
-    command: uvicorn app:app --host 0.0.0.0 --port 8000
-    volumes:
-      - .:/app
-    ports:
-      - "8000:8000"

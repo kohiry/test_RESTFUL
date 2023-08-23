@@ -11,8 +11,8 @@ from datetime import datetime, timedelta
 
 import bcrypt
 import jwt
-from app.config import get_settings
-from app.database import Base
+from config import get_settings
+from database import Base
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -29,7 +29,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     email = Column(String, unique=True, index=True)
-    posts = relationship("Post", back_populates="author")
+    # posts = relationship("Post", back_populates="author")
 
     def hash_password(self, password: str):
         """
@@ -41,8 +41,8 @@ class User(Base):
         """
 
         self.hashed_password = bcrypt.hashpw(
-            password.encode("utf-8"), bcrypt.gensalt().decode("utf-8")
-        )
+            password.encode("utf-8"), bcrypt.gensalt()
+        ).decode("utf-8")
 
     def verify_password(self, password: str):
         """
@@ -55,7 +55,9 @@ class User(Base):
         bool: True, если пароль правильный, иначе False.
         """
 
-        return bcrypt.checkpw(password.encode("utf-8"), self.hashed_password("utf-8"))
+        return bcrypt.checkpw(
+            password.encode("utf-8"), self.hashed_password.encode("utf-8")
+        )
 
     def generate_token(self):
         """

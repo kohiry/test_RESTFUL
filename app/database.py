@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
-
-from app.config import get_settings
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from config import get_settings
 
 # Создание движка для подключения к базе данных
 settings = get_settings()
