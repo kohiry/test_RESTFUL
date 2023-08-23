@@ -1,11 +1,11 @@
 from functools import lru_cache
 
-from pydentic_settings import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     DB_NAME: str
-    USERNAME: str
+    USER: str
     PASSWORD: str
     HOST: str
 
