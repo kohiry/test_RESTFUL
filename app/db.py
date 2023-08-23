@@ -4,15 +4,25 @@ from fastapi import Depends
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
+import os
 
-DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+
+user = os.getenv("USER")
+database = os.getenv("DB_NAME")
+host = os.getenv("HOST")
+password = os.getenv("PASSWORD")
+
+DATABASE_URL = f"postgresql+asyncpg://{user}:{password}@{host}:5432/{database}"
 
 
-class Base(DeclarativeBase):
+class base(DeclarativeBase):
     pass
 
 
-class User(SQLAlchemyBaseUserTableUUID, Base):
+Base = base()
+
+
+class User(SQLAlchemyBaseUserTableUUID, base):
     pass
 
 
