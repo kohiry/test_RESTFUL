@@ -56,18 +56,19 @@ async def create_tasks(
     redis_key = f"post:{new_post.id}"
     post_data = {
         "id": new_post.id,
-        "title": new_post.title,
-        "content": new_post.content,
-        "owner_id": new_post.owner_id,
+        "title": str(new_post.title),
+        "content": str(new_post.content),
+        "owner_id": str(new_post.owner_id),
     }
     try:
+        print(redis_key, post_data)
         redis_db.hmset(redis_key, post_data)
     except redis.exceptions.RedisError as e:
         raise redis.exceptions.RedisError(
             "An error occurred while caching post: " + str(e)
         )
     # Установка ограничения на длительность хранения ключа в секундах (например, 1 час)
-    await redis_db.expire(redis_key, 3600)
+    redis_db.expire(redis_key, 3600)
 
     return {"message": f"Post: {new_post.title} created with {user.email}"}
 
@@ -93,7 +94,7 @@ async def get_task(
     db: AsyncSession = Depends(get_async_session),
 ):
     redis_key = f"post:{task_id}"
-    post_data = await redis.hgetall(redis_key)
+    post_data = redis_db.hgetall(redis_key)
 
     if not post_data:
         # Если данные отсутствуют в кеше, попробуйте получить их из базы данных
@@ -103,7 +104,7 @@ async def get_task(
 
         # Сохраните данные в кеше для будущего использования
         post_data = {
-            "id": post.id,
+            "id": int(post.id),
             "title": post.title,
             "content": post.content,
             "owner_id": post.owner_id,
@@ -132,6 +133,14 @@ async def update_task(
     post.content = post_update.content
     await db.commit()
 
+    # Здесь добавляем код для обновления задачи в Redis
+    redis_key = f"task:{task_id}"
+    updated_task = {
+        "title": post_update.title,
+        "content": post_update.content,
+    }
+    redis_db.hmset(redis_key, updated_task)
+
     return {"message": "Post updated successfully"}
 
 
@@ -149,5 +158,9 @@ async def delete_task(
 
     await db.delete(post)
     await db.commit()
+
+    # Здесь добавляем код для удаления задачи из Redis
+    redis_key = f"task:{task_id}"
+    redis_db.delete(redis_key)
 
     return {"message": "Post deleted successfully"}
