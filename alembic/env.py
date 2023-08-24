@@ -3,7 +3,7 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 # from models import Post
-from db import User, Base
+from app.db import User, Base
 from decouple import config as envconfig
 
 
@@ -21,7 +21,6 @@ section = config.config_ini_section
 config.set_section_option(section, "USER", envconfig("USER"))
 config.set_section_option(section, "PASSWORD", envconfig("PASSWORD"))
 config.set_section_option(section, "DB_NAME", envconfig("DB_NAME"))
-config.set_section_option(section, "HOST", envconfig("HOST"))
 
 # add your model's MetaData object here
 # for 'autogenerate' support

@@ -10,11 +10,12 @@ from sqlalchemy.dialects.postgresql import UUID
 # Получение настроек для подключения к базе данных из переменных окружения
 user = os.getenv("USER")
 database = os.getenv("DB_NAME")
-host = os.getenv("HOST")
 password = os.getenv("PASSWORD")
+# print(user, database, host)
 
 # Формирование URL для подключения к базе данных
-DATABASE_URL = f"postgresql+asyncpg://{user}:{password}@{host}:5432/{database}"
+DATABASE_URL = f"postgresql+asyncpg://{user}:{password}@localhost:5432/{database}"
+print(DATABASE_URL)
 
 
 # Определение базового класса для ORM моделей
@@ -24,6 +25,7 @@ class Base(DeclarativeBase):
 
 # Определение ORM модели для пользователей с использованием FastAPI Users
 class User(SQLAlchemyBaseUserTableUUID, Base):
+    __tablename__ = "users"
     # Определение отношения между пользователем и их постами
     posts = relationship("Post", back_populates="owner")
 
@@ -34,7 +36,7 @@ class Post(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     content = Column(String)
-    owner_id = Column(UUID(as_uuid=True), ForeignKey("user.id"))
+    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     owner = relationship("User", back_populates="posts")
 
 

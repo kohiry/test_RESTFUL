@@ -19,6 +19,8 @@ setuptools = "^68.1.2"
 asyncpg = "^0.28.0"
 fastapi = {extras = ["all"], version = "^0.101.1"}
 fastapi-users = {extras = ["sqlalchemy"], version = "^12.1.1"}
+slowapi = "^0.1.8"
+redis = {extras = ["fastapi"], version = "^5.0.0"}
 
 
 [build-system]

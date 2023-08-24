@@ -1,4 +1,4 @@
-version: '4.2'
+version: '3.8'  # Используйте совместимую версию Docker Compose
 
 services:
   postgres:
@@ -6,8 +6,27 @@ services:
     container_name: bd
     restart: always
     environment:
-      POSTGRES_DB: $(DB_NAME)
-      POSTGRES_USER: $(USER)
-      POSTGRES_PASSWORD: $(PASSWORD)
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
     ports:
       - "5432:5432"
+
+  redis:
+    image: redis
+    container_name: cache_db
+    restart: always
+    ports:
+      - "6379:6379"
+
+  server:
+    build: .
+    command: uvicorn app.app:app --host 0.0.0.0 --port 8000
+    environment:
+      DB_NAME: ${DB_NAME}
+      USER: ${USER}
+      PASSWORD: ${PASSWORD}
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
