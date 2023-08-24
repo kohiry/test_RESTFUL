@@ -27,10 +27,14 @@ class User(SQLAlchemyBaseUserTableUUID, base):
     items = relationship("User", back_populates="posts")
 
 
-class Post(base):
-    __tablename__ = "ptems"
+from sqlalchemy import Column, Integer, String, DateTime
 
+
+class Post(base):
+    __tablename__ = "posts"
+    id = Column(Integer, primary_key=True)
     title = Column(String)
+    content = Column(String)
     owner_id = Column(UUID(as_uuid=True), ForeignKey("user.id"))
     owner = relationship("Post", back_populates="owner")
 
