@@ -1,20 +1,22 @@
-"""stara
+"""start
 
-Revision ID: 97ce86dc2888
+Revision ID: d88fc3da9030
 Revises:
-Create Date: 2023-08-24 21:10:41.968116
+Create Date: 2023-08-25 03:14:57.171078
 
 """
+from typing import Sequence, Union
+
 from alembic import op
 import sqlalchemy as sa
 import fastapi_users_db_sqlalchemy
 
 
 # revision identifiers, used by Alembic.
-revision = "97ce86dc2888"
-down_revision = None
-branch_labels = None
-depends_on = None
+revision: str = "d88fc3da9030"
+down_revision: Union[str, None] = None
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:

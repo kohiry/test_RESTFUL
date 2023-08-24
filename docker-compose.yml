@@ -19,19 +19,18 @@ services:
     ports:
       - "6379:6379"
 
-  server:
-    build: .
-    command: >
-      sh -c "alembic upgrade head && uvicorn app.app:app --host 0.0.0.0 --port 8000"
-    environment:
-      DB_NAME: ${DB_NAME}
-      SECRET_KEY: ${SECRET_KEY}
-      USER: ${USER}
-      PASSWORD: ${PASSWORD}
-    volumes:
-      - .:/app
-    depends_on:
-      - postgres
-      - redis
-    ports:
-      - "8000:8000"
+#   server:
+#     build: .
+#     command: uvicorn app.app:app --host 0.0.0.0 --port 8000
+#     environment:
+#       DB_NAME: ${DB_NAME}
+#       SECRET_KEY: ${SECRET_KEY}
+#       USER: ${USER}
+#       PASSWORD: ${PASSWORD}
+#     volumes:
+#       - .:/app
+#     depends_on:
+#       - postgres
+#       # - redis
+#     ports:
+#       - "8000:8000"

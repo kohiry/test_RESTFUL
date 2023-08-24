@@ -1,8 +1,9 @@
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
-from alembic import context
 
-# from models import Post
+from sqlalchemy import engine_from_config
+from sqlalchemy import pool
+
+from alembic import context
 from app.db import User, Base
 from decouple import config as envconfig
 
@@ -27,7 +28,6 @@ config.set_section_option(section, "DB_NAME", envconfig("DB_NAME"))
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base().metadata
-
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")

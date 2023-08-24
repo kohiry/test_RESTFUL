@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import UUID
 user = os.getenv("USER")
 database = os.getenv("DB_NAME")
 password = os.getenv("PASSWORD")
-# print(user, database, host)
+print(user, database, password)
 
 # Формирование URL для подключения к базе данных
 DATABASE_URL = f"postgresql+asyncpg://{user}:{password}@postgres/{database}"
