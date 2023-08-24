@@ -1,11 +1,12 @@
 from typing import AsyncGenerator
-
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from fastapi import Depends
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 import os
-
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 user = os.getenv("USER")
 database = os.getenv("DB_NAME")
@@ -23,7 +24,15 @@ Base = base()
 
 
 class User(SQLAlchemyBaseUserTableUUID, base):
-    pass
+    items = relationship("User", back_populates="posts")
+
+
+class Post(base):
+    __tablename__ = "ptems"
+
+    title = Column(String)
+    owner_id = Column(UUID(as_uuid=True), ForeignKey("user.id"))
+    owner = relationship("Post", back_populates="owner")
 
 
 engine = create_async_engine(DATABASE_URL)
