@@ -1,16 +1,22 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from db import User, get_async_session, Post
 from schemas import UserCreate, UserRead, PostUpdate
 from users import auth_backend, current_active_user, fastapi_users
-from slowapi import Limiter
+
+from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
-# from fastapi_users.db import SQLAlchemyUserDatabase
-
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
-limiter = Limiter(key_func=get_remote_address, default_limits=["100 per minute"])
+app.state.limiter = limiter
+app.add_exception_handler(
+    RateLimitExceeded, _rate_limit_exceeded_handler
+)  # app.add_middleware(SlowAPIMiddleware)
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -23,8 +29,9 @@ app.include_router(
 
 
 @app.post("/tasks")
-@limiter.limit("100 per minute")
+@limiter.limit("100/minute")
 async def create_tasks(
+    request: Request,
     title: str,
     description: str,
     user: User = Depends(current_active_user),
@@ -43,8 +50,9 @@ async def create_tasks(
 
 
 @app.get("/tasks")
-@limiter.limit("100 per minute")
+@limiter.limit("100/minute")
 async def get_tasks(
+    request: Request,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
@@ -54,8 +62,9 @@ async def get_tasks(
 
 
 @app.get("/tasks/{task_id}")
-@limiter.limit("100 per minute")
+@limiter.limit("100/minute")
 async def get_task(
+    request: Request,
     task_id: int,
     user: User = Depends(current_active_user),
     db: AsyncSession = Depends(get_async_session),
@@ -67,8 +76,9 @@ async def get_task(
 
 
 @app.put("/tasks/{task_id}")
-@limiter.limit("100 per minute")
+@limiter.limit("100/minute")
 async def update_task(
+    request: Request,
     task_id: int,
     post_update: PostUpdate,
     user: User = Depends(current_active_user),
@@ -86,8 +96,9 @@ async def update_task(
 
 
 @app.delete("/tasks/{task_id}")
-@limiter.limit("100 per minute")
+@limiter.limit("100/minute")
 async def delete_task(
+    request: Request,
     task_id: int,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
