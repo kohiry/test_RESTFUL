@@ -4,10 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db import User, get_async_session, Post
 from schemas import UserCreate, UserRead, PostUpdate
 from users import auth_backend, current_active_user, fastapi_users
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 # from fastapi_users.db import SQLAlchemyUserDatabase
 
 app = FastAPI()
+limiter = Limiter(key_func=get_remote_address, default_limits=["100 per minute"])
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -20,6 +23,7 @@ app.include_router(
 
 
 @app.post("/tasks")
+@limiter.limit("100 per minute")
 async def create_tasks(
     title: str,
     description: str,
@@ -39,6 +43,7 @@ async def create_tasks(
 
 
 @app.get("/tasks")
+@limiter.limit("100 per minute")
 async def get_tasks(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
@@ -49,6 +54,7 @@ async def get_tasks(
 
 
 @app.get("/tasks/{task_id}")
+@limiter.limit("100 per minute")
 async def get_task(
     task_id: int,
     user: User = Depends(current_active_user),
@@ -61,6 +67,7 @@ async def get_task(
 
 
 @app.put("/tasks/{task_id}")
+@limiter.limit("100 per minute")
 async def update_task(
     task_id: int,
     post_update: PostUpdate,
@@ -79,6 +86,7 @@ async def update_task(
 
 
 @app.delete("/tasks/{task_id}")
+@limiter.limit("100 per minute")
 async def delete_task(
     task_id: int,
     db: AsyncSession = Depends(get_async_session),
