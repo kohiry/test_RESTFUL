@@ -14,7 +14,7 @@ password = os.getenv("PASSWORD")
 # print(user, database, host)
 
 # Формирование URL для подключения к базе данных
-DATABASE_URL = f"postgresql+asyncpg://{user}:{password}@localhost:5432/{database}"
+DATABASE_URL = f"postgresql+asyncpg://{user}:{password}@postgres/{database}"
 print(DATABASE_URL)
 
 

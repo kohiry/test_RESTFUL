@@ -28,5 +28,7 @@ services:
       PASSWORD: ${PASSWORD}
     volumes:
       - .:/app
+    depends_on:
+      - postgres
     ports:
       - "8000:8000"
