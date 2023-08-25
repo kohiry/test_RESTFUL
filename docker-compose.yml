@@ -1,36 +1,46 @@
-version: '3.8'  # Используйте совместимую версию Docker Compose
+version: '2'  # Используйте совместимую версию Docker Compose
 
 services:
   postgres:
-    image: postgres
-    container_name: bd
-    restart: always
+    image: postgres:15.2
+    container_name: postgres
+    hostname: postgres
+    restart: on-failure
+    ports:
+      - 5432:5432
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${USER}
-      POSTGRES_PASSWORD: ${PASSWORD}
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+  # db:
+  #   image: postgres
+  #   restart: always
+  #   environment:
+  #     POSTGRES_DB: postgres # ${DB_NAME}
+  #     POSTGRES_USER: postgres # ${USER}
+  #     POSTGRES_PASSWORD: postgres # ${PASSWORD}
+  #   ports:
+  #     - "5432:5432"
 
-  redis:
-    image: redis
-    container_name: cache_db
-    restart: always
-    ports:
-      - "6379:6379"
+  # cached_db:
+  #   image: redis
+  #   restart: always
+  #   ports:
+  #     - "6379:6379"
 
-#   server:
-#     build: .
-#     command: uvicorn app.app:app --host 0.0.0.0 --port 8000
-#     environment:
-#       DB_NAME: ${DB_NAME}
-#       SECRET_KEY: ${SECRET_KEY}
-#       USER: ${USER}
-#       PASSWORD: ${PASSWORD}
-#     volumes:
-#       - .:/app
-#     depends_on:
-#       - postgres
-#       # - redis
-#     ports:
-#       - "8000:8000"
+  # server:
+  #   build: .
+  #   command: uvicorn app.app:app --host 0.0.0.0 --port 8000
+  #   environment:
+  #     DB_NAME: postgres # ${DB_NAME}
+  #     SECRET_KEY: ${SECRET_KEY}
+  #     USER: postgres #${USER}
+  #     PASSWORD: postgres #${PASSWORD}
+  #   volumes:
+  #     - .:/app
+  #   depends_on:
+  #     - db
+  #     # - postgres
+  #     # - redis
+  #   ports:
+  #     - "8000:8000"
