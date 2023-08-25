@@ -8,9 +8,9 @@ import os
 from sqlalchemy.dialects.postgresql import UUID
 
 # Получение настроек для подключения к базе данных из переменных окружения
-user = os.getenv("USER")
-database = os.getenv("DB_NAME")
-password = os.getenv("PASSWORD")
+user = os.environ["USER"]
+database = os.environ["DB_NAME"]
+password = os.environ["PASSWORD"]
 print(user, database, password)
 
 # Формирование URL для подключения к базе данных
